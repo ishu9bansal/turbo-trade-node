@@ -1,9 +1,11 @@
 import express from 'express';
-const { createStrategy } = require("../controllers/strategyController");
+const { createBacktest,getUserBacktests } = require("../controllers/strategyController");
 
 const router = express.Router();
 
 // POST /api/users/verify
-router.post('/add-strategy', createStrategy);
+router.post('/create', createBacktest);
+
+router.get('/user', getUserBacktests);
 
 export default router;

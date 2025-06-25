@@ -1,4 +1,4 @@
-// src/models/strategyModel.ts
+// src/models/strategySchema.ts
 import mongoose from "mongoose";
 
 const legSchema = new mongoose.Schema({
@@ -10,7 +10,7 @@ const legSchema = new mongoose.Schema({
 }, { _id: false });
 
 const expirySchema = new mongoose.Schema({
-    weekday: { type: Number, required: true },  // 0-6 (Sun-Sat)
+    weekday: { type: Number, required: true },
     frequency: { type: String, enum: ["WEEKLY", "MONTHLY"], required: true }
 }, { _id: false });
 
@@ -22,7 +22,7 @@ const focusSchema = new mongoose.Schema({
 
 const entryExitSchema = new mongoose.Schema({
     time: { type: String, required: true },
-    movement: { type: Number } // optional for entry, required for exit
+    movement: { type: Number }
 }, { _id: false });
 
 const positionSchema = new mongoose.Schema({
@@ -33,13 +33,11 @@ const positionSchema = new mongoose.Schema({
     legs: { type: [legSchema], required: true }
 }, { _id: false });
 
-const strategySchema = new mongoose.Schema({
+export const strategySnapshotSchema = new mongoose.Schema({
     start_date: { type: String, required: true },
     end_date: { type: String, required: true },
     capital: { type: Number, required: true },
     lot_size: { type: Number, required: true },
     position: { type: positionSchema, required: true },
-    createdAt: { type: Date, default: Date.now }
-});
-
-export const Strategy = mongoose.model("Strategy", strategySchema);
+    createdBy: { type: String, required: true }
+}, { _id: false });

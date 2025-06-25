@@ -1,5 +1,5 @@
-// src/models/tradeResultModel.ts
-import mongoose from "mongoose";
+// src/models/tradeResultSchema.ts
+import mongoose from 'mongoose';
 
 const contractSchema = new mongoose.Schema({
     expiry: { type: Date, required: true },
@@ -17,10 +17,7 @@ const tradeSchema = new mongoose.Schema({
     entry_price: { type: Number, required: true }
 }, { _id: false });
 
-const tradeResultSchema = new mongoose.Schema({
+export const tradeResultSchema = new mongoose.Schema({
     initial_capital: { type: Number, required: true },
-    data: { type: [tradeSchema], required: true },
-    createdAt: { type: Date, default: Date.now }
-});
-
-export const TradeResult = mongoose.model("TradeResult", tradeResultSchema);
+    data: { type: [tradeSchema], required: true }
+}, { _id: false });

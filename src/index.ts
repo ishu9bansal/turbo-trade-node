@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
-import strategyRoutes from './routes/strategyRoutes';
+import backtestRoutes from './routes/backtestRoutes';
 import pythonRoutes from "./routes/pythonRoutes"
 
 dotenv.config();
@@ -17,7 +17,7 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-app.use('/backtests', strategyRoutes);
+app.use('/backtests', backtestRoutes);
 app.use('/python', pythonRoutes);
 
 // Connect to DB & Start Server

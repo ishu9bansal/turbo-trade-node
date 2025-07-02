@@ -5,8 +5,8 @@ import { tradeResultSchema } from './tradeResultSchema';
 
 const backtestSchema = new mongoose.Schema({
     user_id: { type: String, required: true },
-    strategy: { type: strategySnapshotSchema, required: true }, // Embedded strategy
-    results: { type: tradeResultSchema, default: null },         // Embedded result
+    strategy: { type: JSON, required: true }, // Embedded strategy
+    results: { type: JSON, default: null },         // Embedded result
     error: { type: String, default: null },
     status: {
         type: String,

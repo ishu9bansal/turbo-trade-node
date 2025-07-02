@@ -38,6 +38,5 @@ export const strategySnapshotSchema = new mongoose.Schema({
     end_date: { type: String, required: true },
     capital: { type: Number, required: true },
     lot_size: { type: Number, required: true },
-    position: { type: positionSchema, required: true },
-    createdBy: { type: String, required: true }
+    position: { type: positionSchema, required: true }
 }, { _id: false });

@@ -18,7 +18,7 @@ export const verifyToken = async (token: string): Promise<ClerkTokenPayload> => 
     if (!secretKey) {
         throw new Error("Missing Clerk secret key");
     }
-
+    // return {sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU"}
     try {
         const obj = await clerkVerifyToken(token, { secretKey });
         console.log("Decoded Clerk payload:", obj);

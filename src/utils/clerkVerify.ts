@@ -21,7 +21,7 @@ export const verifyToken = async (token: string): Promise<ClerkTokenPayload> => 
     // return {sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU"}
     try {
         const obj = await clerkVerifyToken(token, { secretKey });
-        console.log("Decoded Clerk payload:", obj);
+        // console.log("Decoded Clerk payload:", obj);
         return obj as ClerkTokenPayload;
     } catch (err) {
         console.error("Token verification failed:", err);

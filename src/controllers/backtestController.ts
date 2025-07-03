@@ -37,7 +37,7 @@ export const createBacktest = async (req: Request, res: Response) => {
             ...strategyData,
         })
             .then(response => {
-                console.log("Python backend success:", response.data);
+                // console.log("Python backend success:", response.data);
 
                 // Update Backtest document with result from Python
                 Backtest.findByIdAndUpdate(newBacktest._id, {
@@ -79,10 +79,10 @@ export const getUserBacktests = async (req: Request, res: Response) => {
         const decoded = await verifyToken(token);
 
         // Check if user exists
-        const user = await User.findOne({ sub: decoded.sub });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        // const user = await User.findOne({ sub: decoded.sub });
+        // if (!user) {
+        //     return res.status(404).json({ message: 'User not found' });
+        // }
 
         const backtests = await Backtest.find({ user_id: decoded.sub }).sort({ created_at: -1 });
 

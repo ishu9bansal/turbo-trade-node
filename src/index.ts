@@ -19,6 +19,9 @@ app.use(express.json());
 // Routes
 app.use('/backtests', backtestRoutes);
 app.use('/python', pythonRoutes);
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Welcome to Turbo Trade API' });
+});
 
 // Connect to DB & Start Server
 const startServer = async () => {

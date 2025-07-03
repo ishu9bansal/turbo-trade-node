@@ -12,8 +12,8 @@ export const createBacktest = async (req: Request, res: Response) => {
         }
 
         const token = authHeader.split(' ')[1];
-        // const decoded = await verifyToken(token); // Clerk ID in decoded.sub
-        const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" }
+        const decoded = await verifyToken(token); // Clerk ID in decoded.sub
+        // const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" }
 
         // Ensure user exists
         let user = await User.findOne({ sub: decoded.sub });

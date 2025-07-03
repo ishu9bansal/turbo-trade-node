@@ -16,6 +16,11 @@ const backtestSchema = new mongoose.Schema({
     job_id: { type: String, default: null },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: null }
+}, {
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'updated_at'
+    }
 });
 
 export const Backtest = mongoose.model("Backtest", backtestSchema);

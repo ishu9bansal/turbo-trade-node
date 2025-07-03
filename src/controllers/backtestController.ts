@@ -12,8 +12,8 @@ export const createBacktest = async (req: Request, res: Response) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const decoded = await verifyToken(token); // Clerk ID in decoded.sub
-        // const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" }
+        // const decoded = await verifyToken(token); // Clerk ID in decoded.sub
+        const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" }
 
         // Ensure user exists
         let user = await User.findOne({ sub: decoded.sub });
@@ -36,23 +36,25 @@ export const createBacktest = async (req: Request, res: Response) => {
         axios.post(`${process.env.PYTHON_SERVER_URI}/backtest`, {
             ...strategyData,
         })
-            .then(response => {
+            .then(async(response) => {
                 console.log("Python backend success:", response.data);
 
                 // Update Backtest document with result from Python
-                Backtest.findByIdAndUpdate(newBacktest._id, {
+                await Backtest.findByIdAndUpdate(newBacktest._id, {
                     status: "completed",
                     result: response.data // assuming Python returns useful backtest data
                 })
             })
-            .catch(err => {
+            .catch(async (err) => {
                 console.error("Python backend failed:", err.message);
                 // Optionally update status to error in the DB
-                Backtest.findByIdAndUpdate(newBacktest._id, {
+                await Backtest.findByIdAndUpdate(newBacktest._id, {
                     status: "error",
                     error: "Failed to dispatch to Python backend"
                 }).catch(console.error);
             });
+        
+        console.log(newBacktest);
 
         return res.status(201).json({
             message: 'Backtest queued successfully.',

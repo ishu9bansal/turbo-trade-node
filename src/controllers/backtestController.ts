@@ -33,26 +33,7 @@ export const createBacktest = async (req: Request, res: Response) => {
         });
 
         // Send strategy to Python backend asynchronously
-        axios.post(`${process.env.PYTHON_SERVER_URI}/backtest`, {
-            ...strategyData,
-        })
-            .then(response => {
-                // console.log("Python backend success:", response.data);
-
-                // Update Backtest document with result from Python
-                Backtest.findByIdAndUpdate(newBacktest._id, {
-                    status: "completed",
-                    result: response.data // assuming Python returns useful backtest data
-                })
-            })
-            .catch(err => {
-                console.error("Python backend failed:", err.message);
-                // Optionally update status to error in the DB
-                Backtest.findByIdAndUpdate(newBacktest._id, {
-                    status: "error",
-                    error: "Failed to dispatch to Python backend"
-                }).catch(console.error);
-            });
+        postBacktest(newBacktest, strategyData);
 
         return res.status(201).json({
             message: 'Backtest queued successfully.',
@@ -99,3 +80,32 @@ export const getUserBacktests = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+const postBacktest = async (backtest: any, strategy: any) => {
+    try {
+        console.log("Posting backtest to Python backend:", strategy);
+        const response = await axios.post(`${process.env.PYTHON_SERVER_URI}/backtest`, strategy);
+        console.log("Received response from Python backend for backtest_id:", backtest._id);
+        // Handle response from Python backend
+        if (response.status === 200) {
+            // throw new Error("Test error case");
+            console.log("Backtest posted successfully to Python backend:", backtest._id);
+            // Update backtest status to completed
+            backtest.status = "completed";
+            backtest.results = response.data; // assuming Python returns useful backtest data
+            const saveRes = await backtest.save();
+            console.log("Backtest updated in database:", saveRes);
+        }
+        else {
+            throw new Error(`Python backend returned status ${response.status}`);
+        }
+    } catch (err) {
+        console.error("Error posting backtest to Python:", err);
+        // Optionally handle error, e.g., update backtest status in DB
+        backtest.status = "error";
+        backtest.error = err;
+        const saveRes = await backtest.save();
+        console.log("Backtest updated in database:", saveRes);
+    }
+}

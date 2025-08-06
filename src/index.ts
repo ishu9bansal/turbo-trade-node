@@ -5,6 +5,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import backtestRoutes from './routes/backtestRoutes';
 import pythonRoutes from "./routes/pythonRoutes"
+import strategyRoutes from "./routes/strategyRoutes"
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ app.use(express.json());
 // Routes
 app.use('/backtests', backtestRoutes);
 app.use('/python', pythonRoutes);
+app.use('/strategy', strategyRoutes);
+
+
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'Welcome to Turbo Trade API' });
 });

@@ -6,29 +6,25 @@ import axios from 'axios';
 
 export const createBacktest = async (req: Request, res: Response) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'No token provided' });
+        // Clerk user ID is already attached by authMiddleware
+        const userId = req.user?.sub;
+
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const token = authHeader.split(' ')[1];
-        const decoded = await verifyToken(token); // Clerk ID in decoded.sub
-        // const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" }
-
         // Ensure user exists
-        let user = await User.findOne({ sub: decoded.sub });
+        let user = await User.findOne({ sub: userId });
         if (!user) {
-            user = await User.create({ sub: decoded.sub });
+            user = await User.create({ sub: userId });
         }
 
         const strategyData = req.body;
 
         // Create initial Backtest entry with pending status
         const newBacktest = await Backtest.create({
-            user_id: decoded.sub,
-            strategy: {
-                ...strategyData
-            },
+            user_id: userId,
+            strategy: { ...strategyData },
             status: 'pending',
         });
 
@@ -41,7 +37,7 @@ export const createBacktest = async (req: Request, res: Response) => {
         });
 
     } catch (err) {
-        console.error(err);
+        console.error('CreateBacktest Error:', err);
         return res.status(500).json({
             message: 'Server error',
             error: err instanceof Error ? err.message : 'Unknown error'
@@ -51,21 +47,13 @@ export const createBacktest = async (req: Request, res: Response) => {
 
 export const getUserBacktests = async (req: Request, res: Response) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'No token provided' });
+        const userId = req.user?.sub;
+
+        if (!userId) {
+            return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const token = authHeader.split(' ')[1];
-        const decoded = await verifyToken(token);
-
-        // Check if user exists
-        // const user = await User.findOne({ sub: decoded.sub });
-        // if (!user) {
-        //     return res.status(404).json({ message: 'User not found' });
-        // }
-
-        const backtests = await Backtest.find({ user_id: decoded.sub }).sort({ created_at: -1 });
+        const backtests = await Backtest.find({ user_id: userId }).sort({ created_at: -1 });
 
         return res.status(200).json({
             message: 'Backtests fetched successfully',
@@ -73,14 +61,13 @@ export const getUserBacktests = async (req: Request, res: Response) => {
         });
 
     } catch (err) {
-        console.error(err);
+        console.error('GetUserBacktests Error:', err);
         return res.status(500).json({
             message: 'Server error',
             error: err instanceof Error ? err.message : 'Unknown error'
         });
     }
 };
-
 
 const postBacktest = async (backtest: any, strategy: any) => {
     try {

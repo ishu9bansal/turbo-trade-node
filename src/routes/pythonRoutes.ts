@@ -1,8 +1,6 @@
 // src/routes/pythonProxyRoutes.ts
-import express from 'express';
+const router = require("express").Router();
 const { getConfig,getContracts } = require("../controllers/pythonController")
-
-const router = express.Router();
 
 router.get('/contracts', getContracts);
 router.get('/config', getConfig);

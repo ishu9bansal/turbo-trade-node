@@ -1,10 +1,10 @@
-import { Router } from 'express';
+const router = require("express").Router();
 const { createStrategy, getUserStrategies, updateStrategy } = require("../controllers/strategyController");
-const router = Router();
+const { authMiddleware } = require("../middleware/authMiddleware");
 
 
-router.get('/', getUserStrategies);
-router.post('/', createStrategy);
-router.put('/:id', updateStrategy);
+router.get('/', authMiddleware, getUserStrategies);
+router.post('/', authMiddleware, createStrategy);
+router.put('/:id', authMiddleware, updateStrategy);
 
 export default router;

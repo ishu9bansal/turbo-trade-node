@@ -1,11 +1,10 @@
-import express from 'express';
+const router = require("express").Router();
 const { createBacktest,getUserBacktests } = require("../controllers/backtestController");
-
-const router = express.Router();
+const { authMiddleware } = require("../middleware/authMiddleware");
 
 // POST /api/users/verify
-router.post('/create', createBacktest);
+router.post('/create', authMiddleware, createBacktest);
 
-router.get('/user', getUserBacktests);
+router.get('/user', authMiddleware, getUserBacktests);
 
 export default router;

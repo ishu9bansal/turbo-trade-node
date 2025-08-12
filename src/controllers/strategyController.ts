@@ -5,20 +5,16 @@ import { verifyToken } from '../utils/clerkVerify';
 // GET /strategies -> Fetch all strategies of user
 export const getUserStrategies = async (req: Request, res: Response) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
+        const userId = req.user?.sub;
 
-        const token = authHeader.split(' ')[1];
-        const decoded = await verifyToken(token);
-        // const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" };
+        if (!userId) 
+            return res.status(401).json({ message: 'Unauthorized' });
 
-        const strategies = await Strategy.find({ user_id: decoded.sub });
+        const strategies = await Strategy.find({ user_id: userId });
 
         return res.status(200).json({ strategies });
     } catch (error) {
-        console.error(error);
+        console.error('GetUserStrategies Error:', error);
         return res.status(500).json({ message: 'Failed to fetch strategies', error });
     }
 };
@@ -26,25 +22,21 @@ export const getUserStrategies = async (req: Request, res: Response) => {
 // POST /strategies -> Save new strategy
 export const createStrategy = async (req: Request, res: Response) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
+        const userId = req.user?.sub;
 
-        const token = authHeader.split(' ')[1];
-        const decoded = await verifyToken(token);
-        // const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" };
+        if (!userId)
+            return res.status(401).json({ message: 'Unauthorized' });
 
         const strategyData = req.body;
 
         const newStrategy = await Strategy.create({
-            user_id: decoded.sub,
+            user_id: userId,
             ...strategyData
         });
 
         return res.status(201).json({ message: 'Strategy saved successfully', strategy: newStrategy });
     } catch (error) {
-        console.error(error);
+        console.error('CreateStrategy Error:', error);
         return res.status(500).json({ message: 'Failed to save strategy', error });
     }
 };
@@ -52,30 +44,25 @@ export const createStrategy = async (req: Request, res: Response) => {
 // PUT /strategies/:id -> Update existing strategy
 export const updateStrategy = async (req: Request, res: Response) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
+        const userId = req.user?.sub;
 
-        const token = authHeader.split(' ')[1];
-        const decoded = await verifyToken(token);
-        // const decoded = { sub: "user_2yH0JWs0UtmoeQABQtmfYtq64cU" };
+        if (!userId) 
+            return res.status(401).json({ message: 'Unauthorized' });
 
         const { id } = req.params;
         const strategyData = req.body;
 
-        const strategy = await Strategy.findOne({ _id: id, user_id: decoded.sub });
+        const strategy = await Strategy.findOne({ _id: id, user_id: userId });
 
-        if (!strategy) {
+        if (!strategy) 
             return res.status(404).json({ message: 'Strategy not found' });
-        }
 
         Object.assign(strategy, strategyData);
         await strategy.save();
 
         return res.status(200).json({ message: 'Strategy updated successfully', strategy });
     } catch (error) {
-        console.error(error);
+        console.error('UpdateStrategy Error:', error);
         return res.status(500).json({ message: 'Failed to update strategy', error });
     }
 };
